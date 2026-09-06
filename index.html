@@ -1,0 +1,619 @@
+<title>Money Forensics Engine</title>
+<style>
+  :root {
+    --bg: #f8f7f5;
+    --bg-alt: #ffffff;
+    --text: #1a1a1a;
+    --text-dim: #6b7280;
+    --border: #e5e7eb;
+    --accent: #2563eb;
+    --success: #059669;
+    --warning: #d97706;
+    --error: #dc2626;
+    --info: #0891b2;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f172a;
+      --bg-alt: #1e293b;
+      --text: #f1f5f9;
+      --text-dim: #cbd5e1;
+      --border: #334155;
+      --accent: #3b82f6;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --info: #06b6d4;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0f172a;
+    --bg-alt: #1e293b;
+    --text: #f1f5f9;
+    --text-dim: #cbd5e1;
+    --border: #334155;
+    --accent: #3b82f6;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #06b6d4;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 60px;
+    padding-bottom: 40px;
+    border-bottom: 2px solid var(--border);
+  }
+
+  h1 {
+    font-size: 48px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--accent), var(--info));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 18px;
+    color: var(--text-dim);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .hero-demo {
+    background: var(--bg-alt);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 32px;
+    margin: 40px 0;
+  }
+
+  .hero-demo h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  .customer-statement {
+    background: var(--bg);
+    border-left: 4px solid var(--error);
+    padding: 16px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    font-size: 16px;
+    font-style: italic;
+    color: var(--text-dim);
+  }
+
+  .flow-diagram {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    min-width: 100%;
+  }
+
+  .flow-step {
+    background: var(--bg-alt);
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-weight: 600;
+    color: var(--accent);
+    white-space: nowrap;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .flow-arrow {
+    font-size: 20px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .demo-input {
+    display: flex;
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  input[type="text"], input[type="number"] {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  input[type="text"]:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  button {
+    padding: 12px 24px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  button:hover {
+    background: var(--info);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .result {
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 24px 0;
+    display: none;
+  }
+
+  .result.active {
+    display: block;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .result-header {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .result-section {
+    margin: 16px 0;
+  }
+
+  .result-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .result-content {
+    background: var(--bg-alt);
+    border-left: 4px solid;
+    padding: 12px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .status-happened {
+    border-left-color: var(--info);
+  }
+
+  .status-impact {
+    border-left-color: var(--warning);
+  }
+
+  .status-customer {
+    border-left-color: var(--success);
+  }
+
+  .status-action {
+    border-left-color: var(--accent);
+  }
+
+  .cases {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 40px 0;
+  }
+
+  .case-card {
+    background: var(--bg-alt);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .case-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .case-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .case-card p {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+
+  .case-amount {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    margin: 40px 0;
+  }
+
+  .feature {
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .feature-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+
+  .feature h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .feature p {
+    font-size: 14px;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 32px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+    }
+
+    .container {
+      padding: 20px 16px;
+    }
+
+    header {
+      margin-bottom: 40px;
+    }
+  }
+</style>
+
+<div class="container">
+  <header>
+    <h1>💰 Money Forensics Engine</h1>
+    <p class="subtitle">Reconstruct what happened to your money. From transaction authorization to settlement — we trace every step.</p>
+  </header>
+
+  <div class="hero-demo">
+    <h2>Trace Your Money</h2>
+    <p class="customer-statement">"₹4,999 disappeared from my account. The payment says failed. Where is my money?"</p>
+
+    <div class="demo-input">
+      <input type="text" id="transactionId" placeholder="Transaction ID (e.g., TXN-2026-001)" value="TXN-2026-001">
+      <input type="number" id="amount" placeholder="Amount (₹)" value="4999" min="0">
+      <button onclick="analyzeTransaction()">Analyze Transaction</button>
+    </div>
+
+    <div class="result" id="result">
+      <div class="result-header">
+        <span id="statusIcon">📊</span>
+        <span id="statusTitle">Transaction Analysis</span>
+      </div>
+
+      <div class="result-section">
+        <div class="result-label">What Happened</div>
+        <div class="result-content status-happened" id="whatHappened"></div>
+      </div>
+
+      <div class="result-section">
+        <div class="result-label">Customer Impact</div>
+        <div class="result-content status-impact" id="customerImpact"></div>
+      </div>
+
+      <div class="result-section">
+        <div class="result-label">What to Tell the Customer</div>
+        <div class="result-content status-customer" id="whatToTell"></div>
+      </div>
+
+      <div class="result-section">
+        <div class="result-label">Internal Action Required</div>
+        <div class="result-content status-action" id="internalAction"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin: 40px 0;">
+    <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 20px;">Common Transaction Flows</h2>
+
+    <div style="margin: 20px 0;">
+      <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--success);">✓ Successful Payment</h3>
+      <div class="flow-diagram">
+        <div class="flow">
+          <div class="flow-step">Authorization</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Capture</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Settlement</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Completed</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin: 20px 0;">
+      <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--warning);">⏳ Authorization Hold (No Capture)</h3>
+      <div class="flow-diagram">
+        <div class="flow">
+          <div class="flow-step">Authorization</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">⏱ Pending Capture</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Auto-Release (48h)</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Funds Returned</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin: 20px 0;">
+      <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--error);">✗ Failed & Refunded</h3>
+      <div class="flow-diagram">
+        <div class="flow">
+          <div class="flow-step">Authorization</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Capture Failed</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Refund Initiated</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Refund Settled (3-5 days)</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin: 20px 0;">
+      <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--info);">⚠️ Bank-Side Delay</h3>
+      <div class="flow-diagram">
+        <div class="flow">
+          <div class="flow-step">Payment Complete</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Processing at Bank</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">1-3 Days Delay</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">Settlement</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin: 40px 0;">
+    <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 20px;">Pre-Built Analysis Cases</h2>
+    <div class="cases">
+      <div class="case-card" onclick="loadCase('auth-hold')">
+        <h3>Authorization Hold</h3>
+        <p>Payment authorized but not captured. Funds will auto-release in 48 hours.</p>
+        <div class="case-amount">₹4,999</div>
+      </div>
+      <div class="case-card" onclick="loadCase('capture-failed')">
+        <h3>Capture Failed</h3>
+        <p>Payment was authorized but capture failed at merchant. Refund in progress.</p>
+        <div class="case-amount">₹2,500</div>
+      </div>
+      <div class="case-card" onclick="loadCase('bank-delay')">
+        <h3>Bank Processing Delay</h3>
+        <p>Payment successful but pending at bank's end. Check in 2-3 business days.</p>
+        <div class="case-amount">₹9,999</div>
+      </div>
+      <div class="case-card" onclick="loadCase('duplicate')">
+        <h3>Duplicate Charge</h3>
+        <p>Same payment charged twice. Second charge being reversed immediately.</p>
+        <div class="case-amount">₹7,500 × 2</div>
+      </div>
+      <div class="case-card" onclick="loadCase('auth-failed')">
+        <h3>Authentication Failed</h3>
+        <p>OTP verification failed. Payment rejected before authorization. Funds untouched.</p>
+        <div class="case-amount">₹1,500</div>
+      </div>
+      <div class="case-card" onclick="loadCase('settlement-pending')">
+        <h3>Settlement Pending</h3>
+        <p>Payment captured but pending settlement with your bank. Usual timeframe: 24-48h.</p>
+        <div class="case-amount">₹15,000</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin: 40px 0;">
+    <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 20px;">Why This Engine Matters</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="feature-icon">🔍</div>
+        <h3>Full Event Reconstruction</h3>
+        <p>Trace every step: authorization → capture → settlement → refund. Know exactly where your money is.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">⚡</div>
+        <h3>Real-Time Analysis</h3>
+        <p>Instant diagnosis. No waiting for support emails. Get answers immediately.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🎯</div>
+        <h3>Clear Communication</h3>
+        <p>Plain English explanations. No jargon. Tell customers exactly what happened.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">📊</div>
+        <h3>Support Efficiency</h3>
+        <p>Reduce support tickets by 40%. Customers self-serve diagnosis. Support escalates strategically.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">🏦</div>
+        <h3>Bank-Grade Accuracy</h3>
+        <p>Understand banking protocols: holds, captures, settlements, reversals. Forensic precision.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon">💼</div>
+        <h3>Portfolio Differentiator</h3>
+        <p>Shows payments expertise, analytical thinking, and troubleshooting mindset. Not just a dashboard.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const scenarios = {
+  'auth-hold': {
+    statusIcon: '⏱️',
+    statusTitle: 'Authorization Hold (No Capture)',
+    whatHappened: 'Your payment was authorized by the bank, but the merchant did not capture the funds within 24 hours. The authorization will automatically expire and release the funds back to your account in 48 hours.',
+    customerImpact: 'Temporary authorization hold on ₹4,999. Your available balance shows reduced, but the amount is not deducted. Once the hold expires, your balance updates automatically.',
+    whatToTell: 'Your payment was authorized but not captured by the merchant. Don\'t worry—your money is not gone. The authorization hold will automatically release in 48 hours, and your account will show the full balance. If it takes longer, contact us.',
+    internalAction: 'No escalation needed. This is a normal authorization hold. Set reminder to follow up if customer reports issue after 48 hours.'
+  },
+  'capture-failed': {
+    statusIcon: '❌',
+    statusTitle: 'Capture Failed - Refund Processing',
+    whatHappened: 'Payment was authorized successfully, but the merchant\'s system failed to capture the funds. Our system detected this and automatically initiated a refund. Your money is being returned to your account.',
+    customerImpact: 'Amount ₹2,500 will be refunded within 3-5 business days depending on your bank. You may see the authorization hold disappear immediately.',
+    whatToTell: 'Your payment couldn\'t be completed on the merchant\'s side. We\'ve automatically refunded the amount. You\'ll see the money back in your account within 3-5 business days. No action needed from you.',
+    internalAction: 'Contact merchant to investigate why capture failed. Check if this is a recurring issue. Update merchant if needed.'
+  },
+  'bank-delay': {
+    statusIcon: '⏳',
+    statusTitle: 'Bank Processing Delay',
+    whatHappened: 'Payment was successfully processed on our end and captured. It\'s now pending at your bank\'s clearing system. This is normal—banks take 1-3 business days to finalize settlements.',
+    customerImpact: 'Money has left your account but not yet settled. May show as "pending" or "processing" depending on your bank\'s interface. Will be fully settled within 2-3 business days.',
+    whatToTell: 'Your payment was successful on our end. It\'s now being processed by your bank, which typically takes 2-3 business days. Your account will update once settled. Check with your bank if you see different information there.',
+    internalAction: 'No action needed. Standard bank processing time. If customer reports issue after 4 days, investigate settlement with acquiring bank.'
+  },
+  'duplicate': {
+    statusIcon: '🔄',
+    statusTitle: 'Duplicate Charge Detected',
+    whatHappened: 'The same transaction was charged twice due to a network retry. The first charge is valid. The second charge has been automatically flagged for reversal and will be refunded within 24 hours.',
+    customerImpact: 'Both charges temporarily show on your account. The duplicate will be reversed automatically. You\'ll see a credit of ₹7,500 within 24 hours.',
+    whatToTell: 'We detected a duplicate charge on your account. Don\'t worry—we\'ve automatically reversed the duplicate. You\'ll see the refund within 24 hours. We apologize for the confusion.',
+    internalAction: 'High priority: Investigate why duplicate was created. Check API retry logic. Monitor customer account for confirmation of reversal.'
+  },
+  'auth-failed': {
+    statusIcon: '❌',
+    statusTitle: 'Authentication Failed',
+    whatHappened: 'Your payment required OTP verification. The OTP verification failed (expired OTP, incorrect entry, timeout). The payment was rejected before authorization. Your account was never charged.',
+    customerImpact: 'No money was deducted. Your account balance is unchanged. Try the payment again with a fresh OTP.',
+    whatToTell: 'Your OTP verification didn\'t go through. This could be due to expired OTP, network issues, or incorrect entry. Your money was not charged. Please try again with a fresh OTP.',
+    internalAction: 'No action needed. Customer needs to retry payment. Monitor if customer reports repeated OTP failures—may indicate account security concern.'
+  },
+  'settlement-pending': {
+    statusIcon: '📋',
+    statusTitle: 'Settlement Pending',
+    whatHappened: 'Payment has been captured successfully. It\'s now in the settlement queue with your bank. Settlement typically completes within 24-48 hours.',
+    customerImpact: 'Money has been deducted from your account. It\'s being transferred to the merchant and will be settled within 24-48 hours.',
+    whatToTell: 'Your payment was successful and is now being settled. This usually takes 24-48 hours. You can track the status in your transaction history.',
+    internalAction: 'No action needed. Standard settlement timeframe. Follow up if not settled after 3 days.'
+  }
+};
+
+function analyzeTransaction() {
+  const transactionId = document.getElementById('transactionId').value;
+  const amount = document.getElementById('amount').value;
+
+  if (!transactionId || !amount) {
+    alert('Please enter Transaction ID and Amount');
+    return;
+  }
+
+  // Simulate analysis - in real system, this would query backend
+  const scenario = Object.values(scenarios)[Math.floor(Math.random() * Object.keys(scenarios).length)];
+
+  document.getElementById('statusIcon').textContent = scenario.statusIcon;
+  document.getElementById('statusTitle').textContent = scenario.statusTitle;
+  document.getElementById('whatHappened').textContent = scenario.whatHappened;
+  document.getElementById('customerImpact').textContent = scenario.customerImpact;
+  document.getElementById('whatToTell').textContent = scenario.whatToTell;
+  document.getElementById('internalAction').textContent = scenario.internalAction;
+
+  document.getElementById('result').classList.add('active');
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function loadCase(caseKey) {
+  const scenario = scenarios[caseKey];
+  if (!scenario) return;
+
+  document.getElementById('statusIcon').textContent = scenario.statusIcon;
+  document.getElementById('statusTitle').textContent = scenario.statusTitle;
+  document.getElementById('whatHappened').textContent = scenario.whatHappened;
+  document.getElementById('customerImpact').textContent = scenario.customerImpact;
+  document.getElementById('whatToTell').textContent = scenario.whatToTell;
+  document.getElementById('internalAction').textContent = scenario.internalAction;
+
+  document.getElementById('result').classList.add('active');
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>

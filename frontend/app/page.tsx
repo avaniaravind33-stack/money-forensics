@@ -12,9 +12,9 @@ const SCENARIOS = [
     amount: '₹4,999',
     txnId: 'TXN-2024-001',
     summary: 'Authorized but not captured',
-    whatHappened: 'Your payment was authorized by the bank, but the merchant did not capture the funds within 24 hours. The authorization will automatically expire and release the funds back to your account in 48 hours.',
+    whatHappened: "Your payment was authorized by the bank, but the merchant did not capture the funds within 24 hours. The authorization will automatically expire and release the funds back to your account in 48 hours.",
     customerMessage: "Your money is not gone. The authorization hold will automatically release in 48 hours, and your account will show the full balance restored.",
-    internalAction: 'No escalation needed. Standard authorization hold. Follow up if customer reports issue after 48 hours.',
+    internalAction: "No escalation needed. Standard authorization hold. Follow up if customer reports issue after 48 hours.",
     priority: 'Low',
     priorityColor: '#16a34a',
     escalate: false,
@@ -34,9 +34,9 @@ const SCENARIOS = [
     amount: '₹12,500',
     txnId: 'TXN-2024-002',
     summary: 'Merchant capture error — refund initiated',
-    whatHappened: 'Payment was authorized successfully, but the merchant's system failed to capture the funds. Our system detected this and automatically initiated a refund.',
+    whatHappened: "Payment was authorized successfully, but the merchant's system failed to capture the funds. Our system detected this and automatically initiated a refund.",
     customerMessage: "Your payment couldn't be completed on the merchant's side. We've automatically refunded the amount. You'll see the money back in your account within 3–5 business days.",
-    internalAction: 'Contact merchant to investigate why capture failed. Check if this is a recurring issue. Update merchant firewall if needed.',
+    internalAction: "Contact merchant to investigate why capture failed. Check if this is a recurring issue. Update merchant firewall if needed.",
     priority: 'Medium',
     priorityColor: '#d97706',
     escalate: true,
@@ -57,9 +57,9 @@ const SCENARIOS = [
     amount: '₹8,200',
     txnId: 'TXN-2024-003',
     summary: 'Payment captured, bank settling',
-    whatHappened: 'Payment was successfully processed and captured. It's now pending at your bank's clearing system. Banks take 1–3 business days to finalize settlements — this is completely normal.',
+    whatHappened: "Payment was successfully processed and captured. It's now pending at your bank's clearing system. Banks take 1–3 business days to finalize settlements — this is completely normal.",
     customerMessage: "Your payment was successful on our end. It's being processed by your bank and will fully settle within 2–3 business days. No action needed.",
-    internalAction: 'No action needed. Standard bank processing time. Investigate if not settled after 4 days.',
+    internalAction: "No action needed. Standard bank processing time. Investigate if not settled after 4 days.",
     priority: 'Low',
     priorityColor: '#16a34a',
     escalate: false,
@@ -79,9 +79,9 @@ const SCENARIOS = [
     amount: '₹3,499 × 2',
     txnId: 'TXN-2024-004',
     summary: 'Double charge detected — auto-reversal',
-    whatHappened: 'The same transaction was charged twice due to a network retry. The first charge is valid. The second has been flagged for automatic reversal and will be credited within 24 hours.',
+    whatHappened: "The same transaction was charged twice due to a network retry. The first charge is valid. The second has been flagged for automatic reversal and will be credited within 24 hours.",
     customerMessage: "We detected a duplicate charge on your account and have automatically reversed it. You'll see the refund within 24 hours. We apologize for the confusion.",
-    internalAction: 'HIGH PRIORITY: Investigate API retry logic. Monitor customer account for reversal confirmation. Review duplicate detection thresholds.',
+    internalAction: "HIGH PRIORITY: Investigate API retry logic. Monitor customer account for reversal confirmation. Review duplicate detection thresholds.",
     priority: 'High',
     priorityColor: '#dc2626',
     escalate: true,
@@ -102,9 +102,9 @@ const SCENARIOS = [
     amount: '₹6,750',
     txnId: 'TXN-2024-005',
     summary: 'OTP failed — no money deducted',
-    whatHappened: 'Payment required OTP verification. The OTP failed (expired, incorrect entry, or timeout). The payment was rejected before authorization — your account was never charged.',
+    whatHappened: "Payment required OTP verification. The OTP failed (expired, incorrect entry, or timeout). The payment was rejected before authorization — your account was never charged.",
     customerMessage: "Your OTP verification didn't go through. Your money was NOT charged. Please try again with a fresh OTP — it expires in 10 minutes.",
-    internalAction: 'No action needed. Customer needs to retry. Monitor if customer reports repeated OTP failures — may indicate account security concern.',
+    internalAction: "No action needed. Customer needs to retry. Monitor if customer reports repeated OTP failures — may indicate account security concern.",
     priority: 'Low',
     priorityColor: '#16a34a',
     escalate: false,
@@ -125,9 +125,9 @@ const SCENARIOS = [
     amount: '₹21,000',
     txnId: 'TXN-2024-006',
     summary: 'Captured, awaiting final settlement',
-    whatHappened: 'Payment was captured successfully and is now in the settlement queue with your bank. Settlement completes within 24–48 hours.',
+    whatHappened: "Payment was captured successfully and is now in the settlement queue with your bank. Settlement completes within 24–48 hours.",
     customerMessage: "Your payment was successful and is now being settled. This usually takes 24–48 hours. You can track the status in your transaction history.",
-    internalAction: 'No action needed. Standard settlement timeframe. Follow up if not settled after 3 days.',
+    internalAction: "No action needed. Standard settlement timeframe. Follow up if not settled after 3 days.",
     priority: 'Low',
     priorityColor: '#16a34a',
     escalate: false,
@@ -325,7 +325,7 @@ export default function Home() {
                 <div style={{ background: '#0f172a', border: '1px solid #1e3a5f', borderRadius: 12, padding: '20px 24px' }}>
                   <div style={{ fontSize: 11, color: '#3b82f6', fontWeight: 700, letterSpacing: 1, marginBottom: 10 }}>💬 WHAT TO TELL THE CUSTOMER</div>
                   <p style={{ color: '#e2e8f0', lineHeight: 1.7, margin: 0, fontSize: 15, fontStyle: 'italic' }}>
-                    "{display.customerMessage}"
+                    &quot;{display.customerMessage}&quot;
                   </p>
                 </div>
               </div>
@@ -359,7 +359,7 @@ export default function Home() {
                 <div style={{ fontSize: 11, color: '#64748b', fontWeight: 700, letterSpacing: 1, marginBottom: 20 }}>PAYMENT EVENT CHAIN</div>
                 <div style={{ position: 'relative' }}>
                   {display.timeline.map((event, i) => (
-                    <div key={i} style={{ display: 'flex', gap: 16, marginBottom: i < display.timeline.length - 1 ? 0 : 0, position: 'relative' }}>
+                    <div key={i} style={{ display: 'flex', gap: 16, marginBottom: 0, position: 'relative' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 32, flexShrink: 0 }}>
                         <div style={{
                           width: 28, height: 28, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
